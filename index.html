@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Certificación en Metodología de Diseño y Gestión de Proyectos</title>
+  <meta name="description" content="Quiz interactivo de 102 preguntas sobre Metodología de Diseño y Gestión de Proyectos, PMBOK, Scrum, Kanban, CPM, PERT y EVM con sonido y certificado PDF." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-orb orb-1" aria-hidden="true"></div>
+  <div class="bg-orb orb-2" aria-hidden="true"></div>
+
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-icon" aria-hidden="true">
+        <i class="fa-solid fa-diagram-project"></i>
+      </div>
+      <div class="brand-text">
+        <h1>PM &amp; Design Quiz</h1>
+        <p>Metodología de Diseño y Gestión de Proyectos</p>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <span class="pill-badge" title="Banco total de preguntas">
+        <i class="fa-solid fa-layer-group"></i> 102 Preguntas
+      </span>
+      <button type="button" id="sound-toggle" class="icon-btn" aria-label="Silenciar o activar sonido" title="Activar/Silenciar sonido">
+        <i class="fa-solid fa-volume-high" id="sound-icon"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="main-shell">
+    <!-- PANTALLA DE INICIO -->
+    <section id="start-screen" class="card start-card" aria-labelledby="start-title">
+      <div class="hero-badge">
+        <i class="fa-solid fa-award"></i> Examen de Certificación Aleatorio
+      </div>
+      <h2 id="start-title">Domina la Gestión de Proyectos</h2>
+      <p class="lead">
+        Pon a prueba tus conocimientos sobre ciclo de vida, PMBOK® 7ª Ed., Scrum, Kanban, CPM, PERT, EVM y dirección de proyectos tecnológicos.
+      </p>
+
+      <div class="stats-grid">
+        <article class="stat-item">
+          <i class="fa-solid fa-shuffle"></i>
+          <div>
+            <strong>10 al azar</strong>
+            <span>De un banco de 102</span>
+          </div>
+        </article>
+        <article class="stat-item">
+          <i class="fa-solid fa-check-double"></i>
+          <div>
+            <strong>Mínimo 8 / 10</strong>
+            <span>Para obtener certificado</span>
+          </div>
+        </article>
+        <article class="stat-item">
+          <i class="fa-solid fa-file-pdf"></i>
+          <div>
+            <strong>Certificado PDF</strong>
+            <span>Descarga oficial al aprobar</span>
+          </div>
+        </article>
+      </div>
+
+      <form id="start-form" class="start-form" novalidate>
+        <label for="username" class="input-label">Nombre completo para tu certificado</label>
+        <div class="input-row">
+          <div class="input-wrapper">
+            <i class="fa-solid fa-user-graduate" aria-hidden="true"></i>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Ej. Ana Martínez López"
+              autocomplete="name"
+              maxlength="60"
+              required
+            />
+          </div>
+          <button type="submit" id="start-btn" class="btn btn-primary">
+            <span>Comenzar Examen</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+        <p id="name-error" class="field-error" role="alert" hidden>
+          Por favor, escribe tu nombre para emitir el certificado.
+        </p>
+      </form>
+    </section>
+
+    <!-- PANTALLA DE QUIZ -->
+    <section id="quiz-screen" class="card quiz-card" hidden aria-live="polite">
+      <div class="quiz-topbar">
+        <div class="progress-meta">
+          <span class="question-counter">
+            Pregunta <strong id="current-num">1</strong> de <strong id="total-num">10</strong>
+          </span>
+          <span id="question-category" class="category-chip">Fundamentos</span>
+        </div>
+        <div class="score-badges">
+          <span id="streak-badge" class="streak-chip" hidden>
+            <i class="fa-solid fa-fire"></i> <span id="streak-count">0</span>
+          </span>
+          <span class="score-chip">
+            <i class="fa-solid fa-star"></i> <span id="live-score">0</span> pts
+          </span>
+        </div>
+      </div>
+
+      <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="10" aria-valuenow="1" id="progress-bar-wrap">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+
+      <h2 id="question-text" class="question-title"></h2>
+
+      <ul id="options-list" class="options-list" role="radiogroup" aria-labelledby="question-text"></ul>
+
+      <div id="feedback-box" class="feedback-box" hidden>
+        <div class="feedback-header">
+          <i id="feedback-icon" class="fa-solid"></i>
+          <strong id="feedback-title"></strong>
+        </div>
+        <p id="feedback-explanation"></p>
+      </div>
+
+      <div class="quiz-actions">
+        <span class="keyboard-hint">
+          <kbd>1</kbd>-<kbd>4</kbd> seleccionar · <kbd>Enter</kbd> continuar
+        </span>
+        <div class="action-buttons">
+          <button type="button" id="check-btn" class="btn btn-primary" disabled>
+            <i class="fa-solid fa-check"></i> Comprobar
+          </button>
+          <button type="button" id="next-btn" class="btn btn-accent" hidden>
+            <span id="next-btn-label">Siguiente</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANTALLA DE RESULTADOS -->
+    <section id="results-screen" class="card results-card" hidden>
+      <div class="results-hero">
+        <div class="score-ring-wrap">
+          <svg class="score-ring" viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
+            <circle class="ring-fg" id="ring-progress" cx="60" cy="60" r="52"></circle>
+          </svg>
+          <div class="score-ring-text">
+            <span id="final-score">0</span>
+            <small>/ 10</small>
+          </div>
+        </div>
+
+        <div class="results-summary">
+          <span id="result-status-pill" class="status-pill"></span>
+          <h2 id="results-title"></h2>
+          <p id="results-message"></p>
+          <div class="results-actions">
+            <button type="button" id="download-cert-btn" class="btn btn-success" hidden>
+              <i class="fa-solid fa-file-arrow-down"></i> Descargar Certificado PDF
+            </button>
+            <button type="button" id="retry-btn" class="btn btn-secondary">
+              <i class="fa-solid fa-rotate-right"></i> Nuevo Intento (10 al azar)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vista previa del certificado si aprobó -->
+      <div id="cert-preview" class="cert-preview" hidden>
+        <div class="cert-inner">
+          <div class="cert-corner tl"></div>
+          <div class="cert-corner tr"></div>
+          <div class="cert-corner bl"></div>
+          <div class="cert-corner br"></div>
+          <p class="cert-eyebrow">CERTIFICADO DE APROBACIÓN</p>
+          <h3>Metodología de Diseño y Gestión de Proyectos</h3>
+          <p class="cert-sub">Otorgado a</p>
+          <p class="cert-recipient" id="preview-name"></p>
+          <p class="cert-desc">
+            Por aprobar satisfactoriamente la evaluación aleatoria sobre PMBOK®, ciclos de vida, planificación, CPM/PERT, EVM y metodologías ágiles.
+          </p>
+          <div class="cert-meta">
+            <span>Calificación: <strong id="preview-score"></strong></span>
+            <span>Folio: <strong id="preview-id"></strong></span>
+            <span>Fecha: <strong id="preview-date"></strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desglose de respuestas -->
+      <div class="review-section">
+        <h3><i class="fa-solid fa-list-check"></i> Revisión Detallada</h3>
+        <div id="review-list" class="review-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+  <script src="questions.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
